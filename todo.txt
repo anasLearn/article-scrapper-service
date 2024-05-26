@@ -1,0 +1,8 @@
+we get with beuatifulsoup 4 things.
+
+the section "yle__article__content"  then we remove the tags with the code from replace.py
+
+In the section "yle__article__header"
+we get the text inside the h1
+and we get the text inside the p
+and we get the image link from img
