@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import re
 
 from article_exception import ArticleException
-from replace import remove_text_in_angle_brackets
+from replace import remove_text_in_angle_brackets, remove_figure_tags
 
 header_css_class = "yle__article__header"
 content_css_class = "yle__article__content"
@@ -45,7 +45,7 @@ def scrap_article_header(article_soup: BeautifulSoup) -> dict:
     if header_intro:
         article_introduction = remove_text_in_angle_brackets(str(header_intro))
 
-    # Extract the image URL
+    # Extract the image URL (Obsolete)
     image_tag = article_header.find('img')
     if image_tag and 'src' in image_tag.attrs:
         image_url = image_tag['src']
@@ -53,7 +53,7 @@ def scrap_article_header(article_soup: BeautifulSoup) -> dict:
     return {
         "article_title": article_title,
         "article_introduction": article_introduction,
-        "article_image_url": image_url
+        # "article_image_url": image_url    # Image URL has been removed as we get the images from the RSS feed
     }
 
 
@@ -67,8 +67,14 @@ def scrap_article_content(article_soup: BeautifulSoup) -> str:
     except IndexError:
         raise ArticleException("Article Content Not Found")
 
-    separated_paragraphs = re.sub("</p>", "</p>\n\n", article_content_html)
-    article_content_text = remove_text_in_angle_brackets(separated_paragraphs)
+    # Apply transformations to the HTML content
+    article_content_html = re.sub(r"</p>", "</p>\n\n", article_content_html)
+    article_content_html = re.sub(r"<h2", "\n\n<h2", article_content_html)
+    article_content_html = re.sub(r"</h2>", "</h2>\n\n", article_content_html)
+    article_content_html = remove_figure_tags(article_content_html)
+
+    # Remove text within angle brackets
+    article_content_text = remove_text_in_angle_brackets(article_content_html)
 
     return article_content_text
 
@@ -110,4 +116,6 @@ def scrap_article(article_url: str) -> dict:
 if __name__ == "__main__":
     from pprint import pprint
     arti_url = "https://yle.fi/a/74-20090269"
-    pprint(scrap_article(arti_url))
+    res = scrap_article(arti_url)
+    # print(res["article_content"])
+    pprint(res)
