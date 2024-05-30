@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  article-scrapper:
+    build:
+      context: .
+      args:
+        HOST: ${HOST}
+        PORT: ${PORT}
+    image: article-scrapper-image
+    container_name: scrapper_container
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env
+    restart: unless-stopped

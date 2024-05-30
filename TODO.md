@@ -1,0 +1,1 @@
+The docker must work with localhost and not only 0.0.0.0

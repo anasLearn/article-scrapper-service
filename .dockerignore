@@ -1,0 +1,5 @@
+.idea/
+vend/
+sandbox/
+__pycache__/
+.env
