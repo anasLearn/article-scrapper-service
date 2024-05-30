@@ -36,7 +36,7 @@ def scrap_articles_from_feed_soup(feed_soup: BeautifulSoup):
 
     cleaned_img_urls = [clean_image_url(img_url) for img_url in img_urls]
 
-    return list(zip(guid_texts, cleaned_img_urls))  # remove duplicates
+    return [{"url": article_url, "img_url": img_url} for article_url, img_url in zip(guid_texts, cleaned_img_urls)]
 
 
 def scrap_feed_articles(feed_url: str):

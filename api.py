@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
-from typing import List, Optional, Tuple, Dict
+from typing import List, Optional, Dict
 import uvicorn
 
 from yle import yle_scrap_one_article, yle_scrap_all_feeds
@@ -13,12 +13,12 @@ class ArticleURL(BaseModel):
     url: str
 
 
-@app.get("/get_new_articles", response_model=Dict[str, List[Tuple]])
+@app.get("/get_new_articles", response_model=Dict[str, Dict[str, List[Dict[str, str]]]])
 def get_new_articles(source: Optional[str] = Query(None, description="Source to filter articles by")):
     articles = {}
     if source:
         if source.lower() == YLE_SOURCE:
-            articles = yle_scrap_all_feeds()
+            articles = {"yle": yle_scrap_all_feeds()}
 
     return articles
 
@@ -41,4 +41,4 @@ def scrap_article(
 
 
 if __name__ == "__main__":
-    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("api:app", host="localhost", port=5020, reload=True)

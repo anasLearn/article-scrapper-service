@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import re
 
 from article_exception import ArticleException
-from replace import remove_text_in_angle_brackets, remove_figure_tags
+from edit_html import remove_text_in_angle_brackets, remove_figure_tags
 
 header_css_class = "yle__article__header"
 content_css_class = "yle__article__content"
