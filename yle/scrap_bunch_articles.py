@@ -1,12 +1,10 @@
+import os
 import re
-
+import json
 import requests
 from bs4 import BeautifulSoup
 
 from article_exception import RSSException
-
-# variables needed for scraping
-main_news_url = "https://feeds.yle.fi/uutiset/v1/majorHeadlines/YLE_UUTISET.rss"
 
 
 def get_rss_soup(feed_url: str):
@@ -41,7 +39,7 @@ def scrap_articles_from_feed_soup(feed_soup: BeautifulSoup):
     return list(zip(guid_texts, cleaned_img_urls))  # remove duplicates
 
 
-def scrap_all_feed_articles(feed_url: str):
+def scrap_feed_articles(feed_url: str):
     try:
         feed_soup = get_rss_soup(feed_url)
         articles_urls_and_img_list = scrap_articles_from_feed_soup(feed_soup)
@@ -54,8 +52,23 @@ def scrap_all_feed_articles(feed_url: str):
         return []
 
 
+def scrap_all_feeds():
+    # Read JSON file into a dictionary
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    json_path = os.path.join(script_dir, 'article_sources.json')
+    with open(json_path, "r") as file:
+        feeds = json.load(file)
+
+    all_articles_urls = {}
+
+    for feed_key in feeds:
+        feed_url = feeds[feed_key]
+        all_articles_urls[feed_key] = scrap_feed_articles(feed_url)
+
+    return all_articles_urls
+
+
 if __name__ == "__main__":
-    rss_url = "https://feeds.yle.fi/uutiset/v1/majorHeadlines/YLE_UUTISET.rss"
     from pprint import pprint
-    result = scrap_all_feed_articles(rss_url)
+    result = scrap_all_feeds()
     pprint(result)
