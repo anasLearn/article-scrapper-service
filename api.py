@@ -1,3 +1,5 @@
+import time
+
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
 from typing import List, Optional, Dict
@@ -28,6 +30,9 @@ def scrap_article(
         article: ArticleURL,
         source: Optional[str] = Query(None, description="Source to filter articles by")
 ):
+    # TODO: Improve this process of waiting before scraping to avoid overwhelming the scrapped website
+    time.sleep(0.5)
+
     try:
         scraped_data = {}
         if source:
