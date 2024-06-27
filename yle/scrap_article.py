@@ -18,25 +18,27 @@ def get_article_soup(article_url: str) -> BeautifulSoup:
     # Check if the request was successful
     if response.status_code == 200:
         # Parse the HTML content
-        soup = BeautifulSoup(response.content, 'lxml')
+        soup = BeautifulSoup(response.content, "lxml")
 
         return soup
 
     else:
-        raise ArticleException(f"Failed to retrieve the page. Status code: {response.status_code}. URL = {article_url}")
+        raise ArticleException(
+            f"Failed to retrieve the page. Status code: {response.status_code}. URL = {article_url}"
+        )
 
 
-def scrap_article_header(article_soup: BeautifulSoup) -> dict:
+def scrap_article_header(article_soup: BeautifulSoup, article_url: str) -> dict:
     article_title = ""
     article_introduction = ""
     image_url = ""
 
     article_header = article_soup.find(class_=header_css_class)
     if not article_header:
-        raise ArticleException("Article Header Not Found")
+        raise ArticleException(f"Article Header Not Found: {article_url}")
 
     # Extract header title
-    header_title = article_header.find('h1')
+    header_title = article_header.find("h1")
     if header_title:
         article_title = remove_text_in_angle_brackets(str(header_title))
 
@@ -46,9 +48,9 @@ def scrap_article_header(article_soup: BeautifulSoup) -> dict:
         article_introduction = remove_text_in_angle_brackets(str(header_intro))
 
     # Extract the image URL (Obsolete)
-    image_tag = article_header.find('img')
-    if image_tag and 'src' in image_tag.attrs:
-        image_url = image_tag['src']
+    image_tag = article_header.find("img")
+    if image_tag and "src" in image_tag.attrs:
+        image_url = image_tag["src"]
 
     return {
         "article_title": article_title,
@@ -87,10 +89,10 @@ def scrap_article_datetime(article_soup: BeautifulSoup) -> str:
     modified_tag = article_soup.find(class_=updated_css_class)
 
     # Determine which datetime to use
-    if modified_tag and 'datetime' in modified_tag.attrs:
-        date_str = modified_tag['datetime']
-    elif published_tag and 'datetime' in published_tag.attrs:
-        date_str = published_tag['datetime']
+    if modified_tag and "datetime" in modified_tag.attrs:
+        date_str = modified_tag["datetime"]
+    elif published_tag and "datetime" in published_tag.attrs:
+        date_str = published_tag["datetime"]
     else:
         raise ArticleException("Article date not found")
 
@@ -101,7 +103,7 @@ def scrap_article_datetime(article_soup: BeautifulSoup) -> str:
 def scrap_article(article_url: str) -> dict:
     try:
         article_soup = get_article_soup(article_url)
-        result_dict = scrap_article_header(article_soup)
+        result_dict = scrap_article_header(article_soup, article_url)
         result_dict["article_content"] = scrap_article_content(article_soup)
         result_dict["article_datetime"] = scrap_article_datetime(article_soup)
         return result_dict
@@ -115,6 +117,7 @@ def scrap_article(article_url: str) -> dict:
 
 if __name__ == "__main__":
     from pprint import pprint
+
     arti_url = "https://yle.fi/a/74-20090269"
     res = scrap_article(arti_url)
     # print(res["article_content"])
