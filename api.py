@@ -22,6 +22,19 @@ class ArticleURL(BaseModel):
     url: str
 
 
+@app.get("/ping")
+async def ping():
+    """
+    GET /ping
+
+    Health check endpoint to verify that the article scraper service is alive.
+
+    Returns:
+        str: A confirmation message indicating the service is alive.
+    """
+    return "Hello, Article Scraper Service is alive"
+
+
 @app.get("/get_new_articles", response_model=Dict[str, Dict[str, List[Dict[str, str]]]])
 def get_new_articles(
     source: Optional[str] = Query(None, description="Source to filter articles by")
