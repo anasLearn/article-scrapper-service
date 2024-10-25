@@ -21,7 +21,7 @@ def get_rss_soup(feed_url: str):
 
 def scrap_articles_from_feed_soup(feed_soup: BeautifulSoup):
     def clean_image_url(img_url):
-        cleaned_url = re.sub(r"/w_\d+,h_\d+,q_\d+/", "/", img_url)
+        cleaned_url = re.sub(r"upload/[^/]+", "upload", img_url)
         return cleaned_url
 
     # Extract text inside all <guid> tags
